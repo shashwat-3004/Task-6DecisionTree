@@ -1,0 +1,103 @@
+---
+title: "Task-6 Decision Tree"
+author: "Shashwat Patel"
+date: "07/02/2021"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = FALSE,warning = FALSE)
+```
+
+# **Attaching the required packages**
+
+```{r}
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+library(caTools)
+library(GGally)
+library(caret)
+```
+
+# Using iris dataset
+
+```{r}
+data<-iris
+
+```
+
+# **Basic summary of the data**
+
+```{r}
+head(data)
+
+```
+
+```{r}
+str(data)
+
+summary(data)
+```
+
+# **Data Visualization insight**
+
+```{r, fig.width=10}
+
+ggpairs(data,aes(colour=Species))
+```
+
+# **Splitting the data into training and test dataset**
+
+```{r}
+split<-sample.split(data,SplitRatio = 0.8)
+training_set<-data[split,]
+test_set<-data[!split,]
+
+```
+
+- **Model fitting using 2 varaibles Sepal Length and Sepal Width**
+
+```{r}
+fit_sepal<-rpart(Species~Sepal.Length+Sepal.Width,training_set)
+rpart.plot(fit_sepal,type=2)
+```
+
+- **Model fitting using 2 varaibles Petal Length and Petal Width**
+
+```{r}
+fit_petal<-rpart(Species~Petal.Length+Petal.Width,training_set)
+rpart.plot(fit_petal,type=2)
+```
+
+- **Model fiitng using all the variables**
+
+- As you can see from the plot, it is quite similar to the above plot. It means that Petal and Petal Width are sufficient for categorising. These two variable seem to have highest **Information Gain** 
+
+```{r}
+fit_all<-rpart(Species~Petal.Length+Petal.Width+Sepal.Width+Sepal.Length,training_set)
+rpart.plot(fit_all,type=2)
+```
+
+- Prediction on test dataset
+
+```{r}
+prediction_data<-predict(fit_all,test_set,type = "class")
+
+tab<-table(test_set$Species,prediction_data)
+tab
+```
+
+- Accuracy of the model 
+
+```{r}
+confusionMatrix(tab)
+```
+
+- It can predict the right class with a very high accuracy
+
+# Thank You
+
+
